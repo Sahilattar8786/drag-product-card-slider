@@ -102,12 +102,7 @@
   <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
 
-    const API = 'https://api.escuelajs.co/api/v1/products?offset=0&limit=50';
-
-    function isValidImage(url) {
-      if (!url || typeof url !== 'string') return false;
-      return url.startsWith('https://i.imgur.com/');
-    }
+    const DATA_URL = 'products.json';
 
     /* ------------------------------------------------------------------ */
     /*  useProductSlider — React hook wrapping ProductCardSlider           */
@@ -179,12 +174,10 @@
     /*  ProductCard                                                        */
     /* ------------------------------------------------------------------ */
     function ProductCard({ product, sliderOptions, onSlideChange }) {
-      const images = product.images.filter(isValidImage);
-
       return (
         <div className="product-card">
           <ProductSlider
-            images={images}
+            images={product.images}
             options={sliderOptions}
             onSlideChange={onSlideChange}
           />
@@ -192,7 +185,7 @@
             <h3>{product.title}</h3>
             <div className="meta">
               <span className="price">${product.price}</span>
-              <span className="category">{product.category.name}</span>
+              <span className="category">{product.category}</span>
             </div>
           </div>
         </div>
@@ -240,13 +233,10 @@
       const [lastChange, setLastChange] = useState(null);
 
       useEffect(() => {
-        fetch(API)
+        fetch(DATA_URL)
           .then(res => res.json())
           .then(data => {
-            const valid = data.filter(
-              p => Array.isArray(p.images) && p.images.filter(isValidImage).length >= 2
-            );
-            setProducts(valid);
+            setProducts(data);
             setLoading(false);
           })
           .catch(err => {
@@ -265,7 +255,7 @@
             <span className="react">React 18</span>
             <span>Babel Standalone</span>
             <span>UMD via CDN</span>
-            <span>Live API Data</span>
+            <span>Local JSON Data</span>
           </div>
 
           <h2 className="section-title">Slider Mode</h2>
@@ -285,7 +275,7 @@
           {loading && (
             <div className="loader">
               <div className="spinner"></div>
-              Fetching products from API&hellip;
+              Loading products&hellip;
             </div>
           )}
 
@@ -331,7 +321,7 @@
     /*  HookDemo — demonstrates the useProductSlider hook                  */
     /* ------------------------------------------------------------------ */
     function HookDemo({ product }) {
-      const images = product.images.filter(isValidImage);
+      const images = product.images;
       const [currentSlide, setCurrentSlide] = useState(0);
 
       const { ref, next, prev, goTo } = useProductSlider(
@@ -364,7 +354,7 @@
               <h3>{product.title}</h3>
               <div className="meta">
                 <span className="price">${product.price}</span>
-                <span className="category">{product.category.name}</span>
+                <span className="category">{product.category}</span>
               </div>
             </div>
           </div>

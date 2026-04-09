@@ -1,0 +1,266 @@
+[
+  {
+    "id": 1,
+    "title": "Classic Black T-Shirt",
+    "price": 35,
+    "category": "Clothing",
+    "images": [
+      "https://i.imgur.com/9DqEOV5.jpeg",
+      "https://i.imgur.com/ae0AEYn.jpeg",
+      "https://i.imgur.com/mZ4rUjj.jpeg"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Wireless Gaming Controller",
+    "price": 69,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/ZANVnHE.jpeg",
+      "https://i.imgur.com/Ro5z6Tn.jpeg",
+      "https://i.imgur.com/woA93Li.jpeg"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Wireless Headphone & Earbud Set",
+    "price": 44,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/yVeIeDa.jpeg",
+      "https://i.imgur.com/jByJ4ih.jpeg",
+      "https://i.imgur.com/KXj6Tpb.jpeg"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Comfort-Fit Over-Ear Headphones",
+    "price": 28,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/SolkFEB.jpeg",
+      "https://i.imgur.com/KIGW49u.jpeg",
+      "https://i.imgur.com/mWwek7p.jpeg"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Efficient 2-Slice Toaster",
+    "price": 48,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/keVCVIa.jpeg",
+      "https://i.imgur.com/afHY7v2.jpeg",
+      "https://i.imgur.com/yAOihUe.jpeg"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Sleek Wireless Computer Mouse",
+    "price": 10,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/w3Y8NwQ.jpeg",
+      "https://i.imgur.com/WJFOGIC.jpeg",
+      "https://i.imgur.com/dV4Nklf.jpeg"
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Modern Laptop with Ambient Lighting",
+    "price": 43,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/OKn1KFI.jpeg",
+      "https://i.imgur.com/G4f21Ai.jpeg",
+      "https://i.imgur.com/Z9oKRVJ.jpeg"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Sleek Laptop for Professionals",
+    "price": 97,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/ItHcq7o.jpeg",
+      "https://i.imgur.com/55GM3XZ.jpeg",
+      "https://i.imgur.com/tcNJxoW.jpeg"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Red & Silver Over-Ear Headphones",
+    "price": 39,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/YaSqa06.jpeg",
+      "https://i.imgur.com/isQAliJ.jpeg",
+      "https://i.imgur.com/5B8UQfh.jpeg"
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Mirror Finish Phone Case",
+    "price": 27,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/yb9UQKL.jpeg",
+      "https://i.imgur.com/m2owtQG.jpeg",
+      "https://i.imgur.com/bNiORct.jpeg"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Smartwatch with Vibrant Display",
+    "price": 16,
+    "category": "Electronics",
+    "images": [
+      "https://i.imgur.com/LGk9Jn2.jpeg",
+      "https://i.imgur.com/1ttYWaI.jpeg",
+      "https://i.imgur.com/sPRWnJH.jpeg"
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Modern Leather Sofa",
+    "price": 53,
+    "category": "Furniture",
+    "images": [
+      "https://i.imgur.com/Qphac99.jpeg",
+      "https://i.imgur.com/dJjpEgG.jpeg",
+      "https://i.imgur.com/MxJyADq.jpeg"
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Mid-Century Wooden Dining Table",
+    "price": 24,
+    "category": "Furniture",
+    "images": [
+      "https://i.imgur.com/DMQHGA0.jpeg",
+      "https://i.imgur.com/qrs9QBg.jpeg",
+      "https://i.imgur.com/XVp8T1I.jpeg"
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Golden-Base Stone Top Dining Table",
+    "price": 66,
+    "category": "Furniture",
+    "images": [
+      "https://i.imgur.com/NWIJKUj.jpeg",
+      "https://i.imgur.com/Jn1YSLk.jpeg",
+      "https://i.imgur.com/VNZRvx5.jpeg"
+    ]
+  },
+  {
+    "id": 15,
+    "title": "Modern Elegance Teal Armchair",
+    "price": 25,
+    "category": "Furniture",
+    "images": [
+      "https://i.imgur.com/6wkyyIN.jpeg",
+      "https://i.imgur.com/Ald3Rec.jpeg",
+      "https://i.imgur.com/dIqo03c.jpeg"
+    ]
+  },
+  {
+    "id": 16,
+    "title": "Elegant Solid Wood Dining Table",
+    "price": 67,
+    "category": "Furniture",
+    "images": [
+      "https://i.imgur.com/4lTaHfF.jpeg",
+      "https://i.imgur.com/JktHE1C.jpeg",
+      "https://i.imgur.com/cQeXQMi.jpeg"
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Minimalist Workstation Setup",
+    "price": 49,
+    "category": "Furniture",
+    "images": [
+      "https://i.imgur.com/3oXNBst.jpeg",
+      "https://i.imgur.com/ErYYZnT.jpeg",
+      "https://i.imgur.com/boBPwYW.jpeg"
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Holographic Soccer Cleats",
+    "price": 39,
+    "category": "Shoes",
+    "images": [
+      "https://i.imgur.com/qNOjJje.jpeg",
+      "https://i.imgur.com/NjfCFnu.jpeg",
+      "https://i.imgur.com/eYtvXS1.jpeg"
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Rainbow Glitter High Heels",
+    "price": 39,
+    "category": "Shoes",
+    "images": [
+      "https://i.imgur.com/62gGzeF.jpeg",
+      "https://i.imgur.com/5MoPuFM.jpeg",
+      "https://i.imgur.com/sUVj7pK.jpeg"
+    ]
+  },
+  {
+    "id": 20,
+    "title": "Bold Orange & Blue Sneakers",
+    "price": 27,
+    "category": "Shoes",
+    "images": [
+      "https://i.imgur.com/hKcMNJs.jpeg",
+      "https://i.imgur.com/NYToymX.jpeg",
+      "https://i.imgur.com/HiiapCt.jpeg"
+    ]
+  },
+  {
+    "id": 21,
+    "title": "Vibrant Pink Classic Sneakers",
+    "price": 84,
+    "category": "Shoes",
+    "images": [
+      "https://i.imgur.com/mcW42Gi.jpeg",
+      "https://i.imgur.com/mhn7qsF.jpeg",
+      "https://i.imgur.com/F8vhnFJ.jpeg"
+    ]
+  },
+  {
+    "id": 22,
+    "title": "Silver & Gold High-Top Sneaker",
+    "price": 68,
+    "category": "Shoes",
+    "images": [
+      "https://i.imgur.com/npLfCGq.jpeg",
+      "https://i.imgur.com/vYim3gj.jpeg",
+      "https://i.imgur.com/HxuHwBO.jpeg"
+    ]
+  },
+  {
+    "id": 23,
+    "title": "Chic High-Heel Boots",
+    "price": 36,
+    "category": "Shoes",
+    "images": [
+      "https://i.imgur.com/HqYqLnW.jpeg",
+      "https://i.imgur.com/RlDGnZw.jpeg",
+      "https://i.imgur.com/qa0O6fg.jpeg"
+    ]
+  },
+  {
+    "id": 24,
+    "title": "Purple Leather Loafers",
+    "price": 17,
+    "category": "Shoes",
+    "images": [
+      "https://i.imgur.com/Au8J9sX.jpeg",
+      "https://i.imgur.com/gdr8BW2.jpeg",
+      "https://i.imgur.com/KDCZxnJ.jpeg"
+    ]
+  }
+]

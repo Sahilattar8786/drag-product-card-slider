@@ -8,19 +8,19 @@ Lightweight, zero-dependency image slider built for product cards. Drag, swipe, 
 
 ## Live Demo
 
-> Both demos fetch real product data from [Platzi Fake Store API](https://api.escuelajs.co/api/v1/products).
+> Open these links directly in your browser — no install, no build tools. Product data loads from bundled `examples/products.json`.
 
-| Demo | Description |
+| Demo | Link |
 |---|---|
-| [`examples/index.html`](./examples/index.html) | **Vanilla JS** — Default, Hover Preview, Autoplay, Custom Arrows |
-| [`examples/react-demo.html`](./examples/react-demo.html) | **React CDN** — Component, Hook, Mode Switcher (no build tools) |
+| **Vanilla JS** — Drag, Hover Preview, Autoplay, Custom Arrows | [**Open Live Demo**](https://unpkg.com/product-card-slider/examples/demo-cdn.html) |
+| **React 18** — Component, Hook, Mode Switcher | [**Open React Demo**](https://unpkg.com/product-card-slider/examples/demo-react-cdn.html) |
 
-**Run locally:**
+**Run locally (for development):**
 
 ```bash
-# Any static server works — the demos use ES modules
 npx serve .
-# Then open http://localhost:3000/examples/
+# open http://localhost:3000/examples/index.html       (ESM, local dev)
+# open http://localhost:3000/examples/demo-cdn.html     (CDN build)
 ```
 
 ---
@@ -262,7 +262,7 @@ function ProductSlider({ images }) {
 
 A full React wrapper component with a `useProductSlider` hook is available in [`examples/react-wrapper.jsx`](./examples/react-wrapper.jsx).
 
-**No build tools?** Open [`examples/react-demo.html`](./examples/react-demo.html) — a complete React 18 CDN demo with live API data, mode switcher, and hook usage. Zero setup required.
+**No build tools?** [**Open the live React CDN demo**](https://unpkg.com/product-card-slider/examples/demo-react-cdn.html) — React 18, live API data, mode switcher, and hook usage. Zero setup required.
 
 ---
 

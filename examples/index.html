@@ -175,9 +175,9 @@
 <body>
 
   <h1>ProductCardSlider</h1>
-  <p class="subtitle">Lightweight, zero-dependency product card image slider — powered by live API data</p>
+  <p class="subtitle">Lightweight, zero-dependency product card image slider</p>
   <div class="api-badge">
-    <code>GET https://api.escuelajs.co/api/v1/products</code>
+    <code>products.json — bundled demo data</code>
   </div>
 
   <!-- Section 1 — Default -->
@@ -217,46 +217,29 @@
   <script type="module">
     import ProductCardSlider from '../src/slider.js';
 
-    const API = 'https://api.escuelajs.co/api/v1/products';
-
-    function isValidImage(url) {
-      if (!url || typeof url !== 'string') return false;
-      return url.startsWith('https://i.imgur.com/') ||
-             url.startsWith('https://i.pravatar.cc/') ||
-             url.startsWith('https://picsum.photos/');
-    }
-
     function renderCard(product, sliderAttr) {
-      const imgs = product.images.filter(isValidImage);
-      const firstImg = imgs[0];
-      const restImgs = imgs.slice(1);
-
       return `
         <div class="product-card">
           <div class="product-slider" ${sliderAttr}>
-            <img src="${firstImg}" alt="${product.title}">
-            ${restImgs.map(src => `<img data-src="${src}" alt="${product.title}">`).join('')}
+            <img src="${product.images[0]}" alt="${product.title}">
+            ${product.images.slice(1).map(src => `<img data-src="${src}" alt="${product.title}">`).join('')}
           </div>
           <div class="product-info">
             <h3>${product.title}</h3>
             <div class="meta">
               <span class="price">$${product.price}</span>
-              <span class="category">${product.category.name}</span>
+              <span class="category">${product.category}</span>
             </div>
           </div>
         </div>`;
     }
 
     function renderCardWithCustomArrows(product) {
-      const imgs = product.images.filter(isValidImage);
-      const firstImg = imgs[0];
-      const restImgs = imgs.slice(1);
-
       return `
         <div class="product-card">
           <div class="product-slider" data-slider-custom>
-            <img src="${firstImg}" alt="${product.title}">
-            ${restImgs.map(src => `<img data-src="${src}" alt="${product.title}">`).join('')}
+            <img src="${product.images[0]}" alt="${product.title}">
+            ${product.images.slice(1).map(src => `<img data-src="${src}" alt="${product.title}">`).join('')}
           </div>
           <button class="custom-arrow-btn ca-prev" data-custom-prev>&larr;</button>
           <button class="custom-arrow-btn ca-next" data-custom-next>&rarr;</button>
@@ -264,7 +247,7 @@
             <h3>${product.title}</h3>
             <div class="meta">
               <span class="price">$${product.price}</span>
-              <span class="category">${product.category.name}</span>
+              <span class="category">${product.category}</span>
             </div>
           </div>
         </div>`;
@@ -272,58 +255,23 @@
 
     async function init() {
       try {
-        const res = await fetch(`${API}?offset=0&limit=50`);
-        const allProducts = await res.json();
+        const res = await fetch('products.json');
+        const products = await res.json();
 
-        // Keep only products with 2+ valid images
-        const products = allProducts.filter(p =>
-          Array.isArray(p.images) && p.images.filter(isValidImage).length >= 2
-        );
-
-        if (products.length === 0) {
-          document.querySelectorAll('.loader').forEach(el => {
-            el.textContent = 'No products with multiple images found.';
-          });
-          return;
-        }
-
-        // Split products across the four demo sections
-        const defaultItems  = products.slice(0, 4);
-        const hoverItems    = products.slice(4, 7);
-        const autoItems     = products.slice(7, 10);
-        const customItems   = products.slice(10, 12);
-
-        // --- Section 1: Default ---
         const gridDefault = document.getElementById('grid-default');
-        gridDefault.innerHTML = defaultItems.map(p => renderCard(p, 'data-slider')).join('');
-        ProductCardSlider.initAll('[data-slider]', {
-          showDots: true,
-          showArrows: true,
-        });
+        gridDefault.innerHTML = products.slice(0, 4).map(p => renderCard(p, 'data-slider')).join('');
+        ProductCardSlider.initAll('[data-slider]', { showDots: true, showArrows: true });
 
-        // --- Section 2: Hover Preview ---
         const gridHover = document.getElementById('grid-hover');
-        gridHover.innerHTML = hoverItems.map(p => renderCard(p, 'data-slider-hover')).join('');
-        ProductCardSlider.initAll('[data-slider-hover]', {
-          hoverPreview: true,
-          showDots: true,
-          showArrows: false,
-        });
+        gridHover.innerHTML = products.slice(4, 8).map(p => renderCard(p, 'data-slider-hover')).join('');
+        ProductCardSlider.initAll('[data-slider-hover]', { hoverPreview: true, showDots: true, showArrows: false });
 
-        // --- Section 3: Autoplay + Loop ---
         const gridAuto = document.getElementById('grid-auto');
-        gridAuto.innerHTML = autoItems.map(p => renderCard(p, 'data-slider-auto')).join('');
-        ProductCardSlider.initAll('[data-slider-auto]', {
-          autoplay: true,
-          loop: true,
-          interval: 2000,
-          showDots: true,
-          showArrows: true,
-        });
+        gridAuto.innerHTML = products.slice(8, 12).map(p => renderCard(p, 'data-slider-auto')).join('');
+        ProductCardSlider.initAll('[data-slider-auto]', { autoplay: true, loop: true, interval: 2000, showDots: true, showArrows: true });
 
-        // --- Section 4: Custom Arrows ---
         const gridCustom = document.getElementById('grid-custom');
-        gridCustom.innerHTML = customItems.map(p => renderCardWithCustomArrows(p)).join('');
+        gridCustom.innerHTML = products.slice(12, 16).map(p => renderCardWithCustomArrows(p)).join('');
         gridCustom.querySelectorAll('[data-slider-custom]').forEach(sliderEl => {
           const card = sliderEl.closest('.product-card');
           new ProductCardSlider(sliderEl, {
@@ -333,17 +281,10 @@
           });
         });
 
-        // Log slide change events for debugging
-        document.querySelectorAll('[data-slider]').forEach(el => {
-          el.addEventListener('pcs:change', (e) => {
-            console.log('Slide changed →', e.detail.index);
-          });
-        });
-
       } catch (err) {
-        console.error('Failed to fetch products:', err);
+        console.error('Failed to load products:', err);
         document.querySelectorAll('.loader').forEach(el => {
-          el.innerHTML = `<span style="color:#c00">Failed to load products. Check console.</span>`;
+          el.innerHTML = `<span style="color:#c00">Failed to load products.json</span>`;
         });
       }
     }
