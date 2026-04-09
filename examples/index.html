@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProductCardSlider — Live API Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #86868b;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .api-badge {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .api-badge code {
+      background: #e8e8ed;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    /* ---- Product Grid ---- */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+      max-width: 1100px;
+      margin: 0 auto 3rem;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s;
+      position: relative;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    .product-slider {
+      aspect-ratio: 1 / 1;
+      background: #eee;
+    }
+
+    .product-slider img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: 0.75rem 1rem 1rem;
+    }
+
+    .product-info h3 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-info .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .product-info .price {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .product-info .category {
+      font-size: 0.75rem;
+      color: #86868b;
+      background: #f0f0f5;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ---- Section headers ---- */
+    .section-title {
+      max-width: 1100px;
+      margin: 0 auto 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .section-desc {
+      max-width: 1100px;
+      margin: 0 auto 1rem;
+      font-size: 0.85rem;
+      color: #86868b;
+    }
+
+    hr {
+      max-width: 1100px;
+      margin: 1.5rem auto 2rem;
+      border: none;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    /* ---- Loading state ---- */
+    .loader {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: #86868b;
+      font-size: 0.95rem;
+    }
+
+    .loader .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #e5e5e5;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Custom arrows for Section 4 ---- */
+    .custom-arrow-btn {
+      position: absolute;
+      bottom: 12px;
+      z-index: 3;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      width: 32px;
+      height: 24px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .custom-arrow-btn[disabled] {
+      opacity: 0.25;
+      cursor: default;
+    }
+    .custom-arrow-btn.ca-prev { left: 8px; }
+    .custom-arrow-btn.ca-next { right: 8px; }
+  </style>
+</head>
+<body>
+
+  <h1>ProductCardSlider</h1>
+  <p class="subtitle">Lightweight, zero-dependency product card image slider — powered by live API data</p>
+  <div class="api-badge">
+    <code>GET https://api.escuelajs.co/api/v1/products</code>
+  </div>
+
+  <!-- Section 1 — Default -->
+  <h2 class="section-title">Default — Drag, Arrows &amp; Dots</h2>
+  <p class="section-desc">Swipe, drag, or use arrows. Dots indicate current slide. Real product images from the API.</p>
+  <div class="product-grid" id="grid-default">
+    <div class="loader"><div class="spinner"></div>Fetching products&hellip;</div>
+  </div>
+
+  <hr>
+
+  <!-- Section 2 — Hover Preview -->
+  <h2 class="section-title">Hover Preview — Shopify-style</h2>
+  <p class="section-desc">Move your mouse horizontally across the image to preview all angles. Resets on leave.</p>
+  <div class="product-grid" id="grid-hover">
+    <div class="loader"><div class="spinner"></div>Loading&hellip;</div>
+  </div>
+
+  <hr>
+
+  <!-- Section 3 — Autoplay + Loop -->
+  <h2 class="section-title">Autoplay on Hover + Loop</h2>
+  <p class="section-desc">Images auto-advance while you hover. Infinite loop enabled.</p>
+  <div class="product-grid" id="grid-auto">
+    <div class="loader"><div class="spinner"></div>Loading&hellip;</div>
+  </div>
+
+  <hr>
+
+  <!-- Section 4 — Custom Arrows -->
+  <h2 class="section-title">Custom Arrows — Your Own HTML</h2>
+  <p class="section-desc">Pass any HTML string or DOM element as the arrow. The library handles classes, disabled state, and click events.</p>
+  <div class="product-grid" id="grid-custom">
+    <div class="loader"><div class="spinner"></div>Loading&hellip;</div>
+  </div>
+
+  <script type="module">
+    import ProductCardSlider from '../src/slider.js';
+
+    const API = 'https://api.escuelajs.co/api/v1/products';
+
+    function isValidImage(url) {
+      if (!url || typeof url !== 'string') return false;
+      return url.startsWith('https://i.imgur.com/') ||
+             url.startsWith('https://i.pravatar.cc/') ||
+             url.startsWith('https://picsum.photos/');
+    }
+
+    function renderCard(product, sliderAttr) {
+      const imgs = product.images.filter(isValidImage);
+      const firstImg = imgs[0];
+      const restImgs = imgs.slice(1);
+
+      return `
+        <div class="product-card">
+          <div class="product-slider" ${sliderAttr}>
+            <img src="${firstImg}" alt="${product.title}">
+            ${restImgs.map(src => `<img data-src="${src}" alt="${product.title}">`).join('')}
+          </div>
+          <div class="product-info">
+            <h3>${product.title}</h3>
+            <div class="meta">
+              <span class="price">$${product.price}</span>
+              <span class="category">${product.category.name}</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderCardWithCustomArrows(product) {
+      const imgs = product.images.filter(isValidImage);
+      const firstImg = imgs[0];
+      const restImgs = imgs.slice(1);
+
+      return `
+        <div class="product-card">
+          <div class="product-slider" data-slider-custom>
+            <img src="${firstImg}" alt="${product.title}">
+            ${restImgs.map(src => `<img data-src="${src}" alt="${product.title}">`).join('')}
+          </div>
+          <button class="custom-arrow-btn ca-prev" data-custom-prev>&larr;</button>
+          <button class="custom-arrow-btn ca-next" data-custom-next>&rarr;</button>
+          <div class="product-info">
+            <h3>${product.title}</h3>
+            <div class="meta">
+              <span class="price">$${product.price}</span>
+              <span class="category">${product.category.name}</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function init() {
+      try {
+        const res = await fetch(`${API}?offset=0&limit=50`);
+        const allProducts = await res.json();
+
+        // Keep only products with 2+ valid images
+        const products = allProducts.filter(p =>
+          Array.isArray(p.images) && p.images.filter(isValidImage).length >= 2
+        );
+
+        if (products.length === 0) {
+          document.querySelectorAll('.loader').forEach(el => {
+            el.textContent = 'No products with multiple images found.';
+          });
+          return;
+        }
+
+        // Split products across the four demo sections
+        const defaultItems  = products.slice(0, 4);
+        const hoverItems    = products.slice(4, 7);
+        const autoItems     = products.slice(7, 10);
+        const customItems   = products.slice(10, 12);
+
+        // --- Section 1: Default ---
+        const gridDefault = document.getElementById('grid-default');
+        gridDefault.innerHTML = defaultItems.map(p => renderCard(p, 'data-slider')).join('');
+        ProductCardSlider.initAll('[data-slider]', {
+          showDots: true,
+          showArrows: true,
+        });
+
+        // --- Section 2: Hover Preview ---
+        const gridHover = document.getElementById('grid-hover');
+        gridHover.innerHTML = hoverItems.map(p => renderCard(p, 'data-slider-hover')).join('');
+        ProductCardSlider.initAll('[data-slider-hover]', {
+          hoverPreview: true,
+          showDots: true,
+          showArrows: false,
+        });
+
+        // --- Section 3: Autoplay + Loop ---
+        const gridAuto = document.getElementById('grid-auto');
+        gridAuto.innerHTML = autoItems.map(p => renderCard(p, 'data-slider-auto')).join('');
+        ProductCardSlider.initAll('[data-slider-auto]', {
+          autoplay: true,
+          loop: true,
+          interval: 2000,
+          showDots: true,
+          showArrows: true,
+        });
+
+        // --- Section 4: Custom Arrows ---
+        const gridCustom = document.getElementById('grid-custom');
+        gridCustom.innerHTML = customItems.map(p => renderCardWithCustomArrows(p)).join('');
+        gridCustom.querySelectorAll('[data-slider-custom]').forEach(sliderEl => {
+          const card = sliderEl.closest('.product-card');
+          new ProductCardSlider(sliderEl, {
+            showDots: true,
+            prevArrow: card.querySelector('[data-custom-prev]'),
+            nextArrow: card.querySelector('[data-custom-next]'),
+          });
+        });
+
+        // Log slide change events for debugging
+        document.querySelectorAll('[data-slider]').forEach(el => {
+          el.addEventListener('pcs:change', (e) => {
+            console.log('Slide changed →', e.detail.index);
+          });
+        });
+
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+        document.querySelectorAll('.loader').forEach(el => {
+          el.innerHTML = `<span style="color:#c00">Failed to load products. Check console.</span>`;
+        });
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>

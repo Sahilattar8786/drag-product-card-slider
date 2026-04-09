@@ -1,0 +1,53 @@
+{
+  "name": "product-card-slider",
+  "version": "1.0.0",
+  "description": "Lightweight, zero-dependency product card image slider. Drag, swipe, hover-preview — works everywhere.",
+  "main": "dist/product-card-slider.umd.js",
+  "module": "dist/product-card-slider.esm.js",
+  "source": "src/slider.js",
+  "exports": {
+    ".": {
+      "import": "./dist/product-card-slider.esm.js",
+      "require": "./dist/product-card-slider.umd.js",
+      "default": "./dist/product-card-slider.umd.js"
+    },
+    "./css": "./dist/product-card-slider.css",
+    "./src": "./src/slider.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "index.js"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs && cp src/styles.css dist/product-card-slider.css",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sahilattar8786/drag-product-card-slider.git"
+  },
+  "keywords": [
+    "slider",
+    "product-card",
+    "image-slider",
+    "carousel",
+    "swipe",
+    "drag",
+    "ecommerce",
+    "shopify",
+    "vanilla-js",
+    "lightweight",
+    "zero-dependency"
+  ],
+  "author": "Sahilattar8786",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Sahilattar8786/drag-product-card-slider/issues"
+  },
+  "homepage": "https://github.com/Sahilattar8786/drag-product-card-slider#readme",
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.28.0"
+  }
+}

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProductCardSlider — React CDN Demo</title>
+
+  <!-- React 18 via CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel standalone for in-browser JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- ProductCardSlider UMD build (exposes window.ProductCardSlider) -->
+  <!-- In production: https://unpkg.com/product-card-slider/dist/product-card-slider.umd.min.js -->
+  <script src="../dist/product-card-slider.umd.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      padding: 2rem 1rem;
+    }
+
+    h1 { text-align: center; font-size: 1.75rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { text-align: center; color: #86868b; margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .tech-badge { text-align: center; margin-bottom: 2rem; display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+    .tech-badge span {
+      background: #e8e8ed; padding: 0.2rem 0.6rem; border-radius: 5px;
+      font-size: 0.75rem; color: #555; font-weight: 500;
+    }
+    .tech-badge span.react { background: #e0f4ff; color: #0a7ea4; }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+      max-width: 1100px;
+      margin: 0 auto 2rem;
+    }
+
+    .product-card {
+      background: #fff; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: box-shadow 0.2s; position: relative;
+    }
+    .product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+    .product-slider { aspect-ratio: 1 / 1; background: #eee; }
+    .product-slider img { width: 100%; height: 100%; object-fit: cover; }
+
+    .product-info { padding: 0.75rem 1rem 1rem; }
+    .product-info h3 {
+      font-size: 0.95rem; font-weight: 500; margin-bottom: 0.25rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-info .meta { display: flex; justify-content: space-between; align-items: center; }
+    .product-info .price { font-size: 0.95rem; font-weight: 600; }
+    .product-info .category {
+      font-size: 0.75rem; color: #86868b; background: #f0f0f5;
+      padding: 2px 8px; border-radius: 4px;
+    }
+
+    .section-title { max-width: 1100px; margin: 0 auto 0.5rem; font-size: 1.1rem; font-weight: 600; }
+    .section-desc { max-width: 1100px; margin: 0 auto 1rem; font-size: 0.85rem; color: #86868b; }
+    hr { max-width: 1100px; margin: 1.5rem auto 2rem; border: none; border-top: 1px solid #e5e5e5; }
+
+    .loader { text-align: center; padding: 4rem 1rem; color: #86868b; }
+    .spinner {
+      width: 32px; height: 32px; border: 3px solid #e5e5e5; border-top-color: #0a7ea4;
+      border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg { color: #c00; text-align: center; padding: 2rem; }
+
+    .mode-tabs {
+      max-width: 1100px; margin: 0 auto 1.5rem;
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .mode-tabs button {
+      padding: 0.4rem 1rem; border: 1.5px solid #ddd; border-radius: 8px;
+      background: #fff; cursor: pointer; font-size: 0.85rem; font-weight: 500;
+      color: #555; transition: all 0.15s;
+    }
+    .mode-tabs button:hover { border-color: #999; }
+    .mode-tabs button.active { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+
+    .slide-counter {
+      max-width: 1100px; margin: -1.5rem auto 2rem;
+      font-size: 0.8rem; color: #86868b; text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    const API = 'https://api.escuelajs.co/api/v1/products?offset=0&limit=50';
+
+    function isValidImage(url) {
+      if (!url || typeof url !== 'string') return false;
+      return url.startsWith('https://i.imgur.com/');
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  useProductSlider — React hook wrapping ProductCardSlider           */
+    /* ------------------------------------------------------------------ */
+    function useProductSlider(options = {}, deps = []) {
+      const ref = useRef(null);
+      const instanceRef = useRef(null);
+
+      useEffect(() => {
+        const el = ref.current;
+        if (!el || !el.querySelectorAll('img').length) return;
+
+        // Destroy previous instance if re-initializing
+        instanceRef.current?.destroy();
+        instanceRef.current = new ProductCardSlider(el, options);
+
+        return () => {
+          instanceRef.current?.destroy();
+          instanceRef.current = null;
+        };
+      }, deps);
+
+      return {
+        ref,
+        next: () => instanceRef.current?.next(),
+        prev: () => instanceRef.current?.prev(),
+        goTo: (i) => instanceRef.current?.goTo(i),
+      };
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  ProductSlider — reusable React component                          */
+    /* ------------------------------------------------------------------ */
+    function ProductSlider({ images, options = {}, onSlideChange }) {
+      const containerRef = useRef(null);
+      const instanceRef = useRef(null);
+
+      useEffect(() => {
+        const el = containerRef.current;
+        if (!el || images.length === 0) return;
+
+        instanceRef.current = new ProductCardSlider(el, options);
+
+        const handler = (e) => onSlideChange?.(e.detail.index);
+        el.addEventListener('pcs:change', handler);
+
+        return () => {
+          el.removeEventListener('pcs:change', handler);
+          instanceRef.current?.destroy();
+          instanceRef.current = null;
+        };
+      }, [images]);
+
+      return (
+        <div ref={containerRef} className="product-slider">
+          {images.map((src, i) => (
+            <img
+              key={src + i}
+              src={i === 0 ? src : undefined}
+              data-src={i > 0 ? src : undefined}
+              alt=""
+            />
+          ))}
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  ProductCard                                                        */
+    /* ------------------------------------------------------------------ */
+    function ProductCard({ product, sliderOptions, onSlideChange }) {
+      const images = product.images.filter(isValidImage);
+
+      return (
+        <div className="product-card">
+          <ProductSlider
+            images={images}
+            options={sliderOptions}
+            onSlideChange={onSlideChange}
+          />
+          <div className="product-info">
+            <h3>{product.title}</h3>
+            <div className="meta">
+              <span className="price">${product.price}</span>
+              <span className="category">{product.category.name}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Modes configuration                                                */
+    /* ------------------------------------------------------------------ */
+    const MODES = [
+      {
+        id: 'default',
+        label: 'Default (Drag + Arrows)',
+        desc: 'Swipe, drag, or click arrows. Dots show current position.',
+        options: { showDots: true, showArrows: true },
+      },
+      {
+        id: 'hover',
+        label: 'Hover Preview',
+        desc: 'Move your mouse horizontally to preview images. Shopify-style zone switching.',
+        options: { hoverPreview: true, showDots: true, showArrows: false },
+      },
+      {
+        id: 'autoplay',
+        label: 'Autoplay + Loop',
+        desc: 'Images auto-advance on hover. Infinite loop enabled.',
+        options: { autoplay: true, loop: true, interval: 2000, showDots: true, showArrows: true },
+      },
+      {
+        id: 'minimal',
+        label: 'Minimal (No UI)',
+        desc: 'No dots, no arrows. Pure drag/swipe interaction only.',
+        options: { showDots: false, showArrows: false },
+      },
+    ];
+
+    /* ------------------------------------------------------------------ */
+    /*  App                                                                */
+    /* ------------------------------------------------------------------ */
+    function App() {
+      const [products, setProducts] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [activeMode, setActiveMode] = useState('default');
+      const [lastChange, setLastChange] = useState(null);
+
+      useEffect(() => {
+        fetch(API)
+          .then(res => res.json())
+          .then(data => {
+            const valid = data.filter(
+              p => Array.isArray(p.images) && p.images.filter(isValidImage).length >= 2
+            );
+            setProducts(valid);
+            setLoading(false);
+          })
+          .catch(err => {
+            setError(err.message);
+            setLoading(false);
+          });
+      }, []);
+
+      const mode = MODES.find(m => m.id === activeMode);
+
+      return (
+        <React.Fragment>
+          <h1>ProductCardSlider</h1>
+          <p className="subtitle">React CDN Demo — zero build tools required</p>
+          <div className="tech-badge">
+            <span className="react">React 18</span>
+            <span>Babel Standalone</span>
+            <span>UMD via CDN</span>
+            <span>Live API Data</span>
+          </div>
+
+          <h2 className="section-title">Slider Mode</h2>
+          <div className="mode-tabs">
+            {MODES.map(m => (
+              <button
+                key={m.id}
+                className={m.id === activeMode ? 'active' : ''}
+                onClick={() => setActiveMode(m.id)}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <p className="section-desc">{mode.desc}</p>
+
+          {loading && (
+            <div className="loader">
+              <div className="spinner"></div>
+              Fetching products from API&hellip;
+            </div>
+          )}
+
+          {error && <p className="error-msg">Failed to load: {error}</p>}
+
+          {!loading && !error && (
+            <React.Fragment>
+              {lastChange !== null && (
+                <div className="slide-counter">
+                  Last slide event: image #{lastChange + 1}
+                </div>
+              )}
+
+              {/* Key on activeMode forces full remount so slider re-initializes */}
+              <div className="product-grid" key={activeMode}>
+                {products.slice(0, 8).map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    sliderOptions={mode.options}
+                    onSlideChange={(idx) => setLastChange(idx)}
+                  />
+                ))}
+              </div>
+            </React.Fragment>
+          )}
+
+          <hr />
+
+          <h2 className="section-title">useProductSlider Hook Demo</h2>
+          <p className="section-desc">
+            Imperative control via a React hook — call next(), prev(), goTo() programmatically.
+          </p>
+
+          {!loading && !error && products.length > 0 && (
+            <HookDemo product={products[0]} />
+          )}
+        </React.Fragment>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  HookDemo — demonstrates the useProductSlider hook                  */
+    /* ------------------------------------------------------------------ */
+    function HookDemo({ product }) {
+      const images = product.images.filter(isValidImage);
+      const [currentSlide, setCurrentSlide] = useState(0);
+
+      const { ref, next, prev, goTo } = useProductSlider(
+        { showDots: true, showArrows: false, loop: true },
+        [product.id]
+      );
+
+      useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const handler = (e) => setCurrentSlide(e.detail.index);
+        el.addEventListener('pcs:change', handler);
+        return () => el.removeEventListener('pcs:change', handler);
+      }, [product.id]);
+
+      return (
+        <div style={{ maxWidth: 320, margin: '0 auto 3rem' }}>
+          <div className="product-card">
+            <div className="product-slider" ref={ref}>
+              {images.map((src, i) => (
+                <img
+                  key={src + i}
+                  src={i === 0 ? src : undefined}
+                  data-src={i > 0 ? src : undefined}
+                  alt=""
+                />
+              ))}
+            </div>
+            <div className="product-info">
+              <h3>{product.title}</h3>
+              <div className="meta">
+                <span className="price">${product.price}</span>
+                <span className="category">{product.category.name}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            display: 'flex', gap: '0.5rem', justifyContent: 'center',
+            marginTop: '1rem', alignItems: 'center'
+          }}>
+            <button onClick={prev} style={btnStyle}>&larr; Prev</button>
+            <span style={{ fontSize: '0.85rem', color: '#86868b', minWidth: 60, textAlign: 'center' }}>
+              {currentSlide + 1} / {images.length}
+            </span>
+            <button onClick={next} style={btnStyle}>Next &rarr;</button>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center', marginTop: '0.75rem' }}>
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                style={{
+                  ...btnSmallStyle,
+                  background: i === currentSlide ? '#1d1d1f' : '#e5e5e5',
+                  color: i === currentSlide ? '#fff' : '#555',
+                }}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    const btnStyle = {
+      padding: '0.4rem 1rem', border: '1.5px solid #ddd', borderRadius: 8,
+      background: '#fff', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500,
+    };
+
+    const btnSmallStyle = {
+      width: 28, height: 28, border: 'none', borderRadius: 6,
+      cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600,
+    };
+
+    /* ------------------------------------------------------------------ */
+    /*  Mount                                                              */
+    /* ------------------------------------------------------------------ */
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+
+</body>
+</html>
