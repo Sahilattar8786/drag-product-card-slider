@@ -93,7 +93,10 @@ class ProductCardSlider {
     this._timers = { auto: null, raf: null, hover: null };
     this._obs = null;
     this._ro = null;
+    this._autoObs = null;
     this._dead = false;
+    this._noHover = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches;
+    this._inView = false;
 
     // Pre-bind handlers so they can be cleanly removed
     this._bPD = this._onDown.bind(this);
@@ -225,7 +228,15 @@ class ProductCardSlider {
       this.el.addEventListener('mouseleave', this._bML);
     }
 
-    // Use ResizeObserver when available (no debounce needed); fall back to window resize
+    // Touch devices: autoplay when slider enters viewport (no hover available)
+    if (this.o.autoplay && this._noHover && typeof IntersectionObserver !== 'undefined') {
+      this._autoObs = new IntersectionObserver(([entry]) => {
+        this._inView = entry.isIntersecting;
+        entry.isIntersecting ? this._startAuto() : this._stopAuto();
+      }, { threshold: 0.5 });
+      this._autoObs.observe(this.el);
+    }
+
     if (typeof ResizeObserver !== 'undefined') {
       this._ro = new ResizeObserver(this._bRS);
       this._ro.observe(this.el);
@@ -271,6 +282,14 @@ class ProductCardSlider {
     d.sy = e.clientY;
     d.dx = 0;
     d.t0 = Date.now();
+    d.touchPreview = this.o.hoverPreview && e.pointerType === 'touch';
+
+    if (e.pointerType === 'touch') this._stopAuto();
+
+    if (d.touchPreview) {
+      this.el.classList.add('pcs-hover');
+      this._doZone(e.clientX);
+    }
 
     this.track.classList.add('pcs-grab');
 
@@ -283,10 +302,15 @@ class ProductCardSlider {
     const d = this._d;
     if (!d.on) return;
 
+    // Touch + hoverPreview → zone-based image switching
+    if (d.touchPreview) {
+      this._doZone(e.clientX);
+      return;
+    }
+
     const dx = e.clientX - d.sx;
     const dy = e.clientY - d.sy;
 
-    // Direction lock: first 5px of movement decides horizontal vs vertical
     if (!d.locked) {
       if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
       d.locked = true;
@@ -300,7 +324,6 @@ class ProductCardSlider {
     const w = this.el.offsetWidth;
     let offset = dx;
 
-    // Rubber-band resistance at edges when loop is off
     if (!this.o.loop) {
       const atStart = this.idx === 0 && dx > 0;
       const atEnd = this.idx === this.count - 1 && dx < 0;
@@ -314,12 +337,19 @@ class ProductCardSlider {
     const d = this._d;
     if (!d.on) return;
 
+    if (d.touchPreview) {
+      this.el.classList.remove('pcs-hover');
+      this._go(0);
+      this._endDrag();
+      if (this.o.autoplay && this._noHover && this._inView) this._startAuto();
+      return;
+    }
+
     const dx = d.dx;
     const dt = Date.now() - d.t0;
     const speed = dt > 0 ? Math.abs(dx) / dt : 0;
     const th = this.o.swipeThreshold;
 
-    // Advance if drag distance exceeds threshold OR a fast flick was detected
     const shouldAdvance = Math.abs(dx) > th || (this.o.momentum && speed > 0.4);
 
     if (shouldAdvance && dx !== 0) {
@@ -329,6 +359,7 @@ class ProductCardSlider {
     }
 
     this._endDrag();
+    if (this.o.autoplay && this._noHover && this._inView) this._startAuto();
   }
 
   _endDrag() {
@@ -353,6 +384,7 @@ class ProductCardSlider {
   /* ------------------------------------------------------------------ */
 
   _onEnter() {
+    if (this._noHover) return;
     if (this.o.autoplay) this._startAuto();
     if (this.o.hoverPreview) {
       this.el.classList.add('pcs-hover');
@@ -361,6 +393,7 @@ class ProductCardSlider {
   }
 
   _onLeave() {
+    if (this._noHover) return;
     this._stopAuto();
     if (this.o.hoverPreview) {
       this.el.classList.remove('pcs-hover');
@@ -371,17 +404,20 @@ class ProductCardSlider {
 
   /**
    * Zone-based hover preview: divide the card width into N zones
-   * (one per image) and snap to the zone under the cursor.
+   * (one per image) and snap to the zone under the cursor/finger.
    * Throttled via requestAnimationFrame to avoid layout thrashing.
    */
   _onHoverMove(e) {
     if (this._d.on) return;
-    if (this._timers.hover) return;
+    this._doZone(e.clientX);
+  }
 
+  _doZone(clientX) {
+    if (this._timers.hover) return;
     this._timers.hover = requestAnimationFrame(() => {
       this._timers.hover = null;
       const rect = this.el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
+      const x = clientX - rect.left;
       const zone = Math.floor((x / rect.width) * this.count);
       const i = Math.max(0, Math.min(zone, this.count - 1));
       if (i !== this.idx) this._go(i);
@@ -498,6 +534,7 @@ class ProductCardSlider {
     if (this._timers.raf) cancelAnimationFrame(this._timers.raf);
     if (this._timers.hover) cancelAnimationFrame(this._timers.hover);
     if (this._obs) this._obs.disconnect();
+    if (this._autoObs) this._autoObs.disconnect();
     if (this._ro) this._ro.disconnect();
     else window.removeEventListener('resize', this._bRS);
 
