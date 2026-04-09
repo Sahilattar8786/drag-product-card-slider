@@ -2,7 +2,26 @@
 
 Lightweight, zero-dependency image slider built for product cards. Drag, swipe, hover-preview — works in React, Vue, Shopify, or plain HTML.
 
-**~3 KB** minified · **Zero dependencies** · **Plug & play**
+**~3 KB** gzipped · **Zero dependencies** · **Plug & play**
+
+---
+
+## Live Demo
+
+> Both demos fetch real product data from [Platzi Fake Store API](https://api.escuelajs.co/api/v1/products).
+
+| Demo | Description |
+|---|---|
+| [`examples/index.html`](./examples/index.html) | **Vanilla JS** — Default, Hover Preview, Autoplay, Custom Arrows |
+| [`examples/react-demo.html`](./examples/react-demo.html) | **React CDN** — Component, Hook, Mode Switcher (no build tools) |
+
+**Run locally:**
+
+```bash
+# Any static server works — the demos use ES modules
+npx serve .
+# Then open http://localhost:3000/examples/
+```
 
 ---
 
@@ -242,6 +261,8 @@ function ProductSlider({ images }) {
 ```
 
 A full React wrapper component with a `useProductSlider` hook is available in [`examples/react-wrapper.jsx`](./examples/react-wrapper.jsx).
+
+**No build tools?** Open [`examples/react-demo.html`](./examples/react-demo.html) — a complete React 18 CDN demo with live API data, mode switcher, and hook usage. Zero setup required.
 
 ---
 
