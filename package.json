@@ -1,6 +1,6 @@
 {
   "name": "product-card-slider",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Lightweight, zero-dependency product card image slider. Drag, swipe, hover-preview — works everywhere.",
   "main": "dist/product-card-slider.umd.js",
   "module": "dist/product-card-slider.esm.js",
@@ -18,7 +18,8 @@
     "dist",
     "src",
     "examples",
-    "index.js"
+    "index.js",
+    "index.html"
   ],
   "scripts": {
     "build": "rollup -c rollup.config.mjs && cp src/styles.css dist/product-card-slider.css",
@@ -46,7 +47,7 @@
   "bugs": {
     "url": "https://github.com/Sahilattar8786/drag-product-card-slider/issues"
   },
-  "homepage": "https://github.com/Sahilattar8786/drag-product-card-slider#readme",
+  "homepage": "https://unpkg.com/product-card-slider@1.0.3/index.html",
   "devDependencies": {
     "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.28.0"
